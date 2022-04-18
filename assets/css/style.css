@@ -1,0 +1,12 @@
+
+.status-pill {
+  height: 60px;
+  width: 150px;
+  margin: 0 auto;
+  background: red;
+  border-radius: 80px ;
+  border: 1px solid black;
+}
+
+
+

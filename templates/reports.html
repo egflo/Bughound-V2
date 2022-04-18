@@ -1,0 +1,88 @@
+
+
+
+{% extends "base.html" %}
+{% load bootstrap5 %}
+{% load static %}
+{% block content %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h1>Reports</h1>
+        </div>
+    </div>
+    {% for report in reports %}
+    <div class="row">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h5 class="card-title">
+                            {{ report.program.program_name }} ({{report.program.release_build }}, {{ report.program.version }})
+                        </h5>
+                    </div>
+                    <div class="col-auto">
+                        {% if report.severity.id == 1 %}
+                            <div class="status-pill success">
+                                <p>{{ report.severity.description }}</p>
+                            </div>
+                        {% elif report.severity.id == 2 %}
+                            <div class="status-pill warning">
+                                <p>{{ report.severity.description }}</p>
+                            </div>
+                        {% else %}
+                            <div class="status-pill danger">
+                                <p>{{ report.severity.description }}</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="col-auto">
+                        {% if report.status.id == 1 %}
+                            <div class="status-pill success">
+                                <p>{{ report.status.description }}</p>
+                            </div>
+                        {% elif report.status.id == 2 %}
+                            <div class="status-pill warning">
+                                <p>{{ report.status.description }}</p>
+                            </div>
+                        {% else %}
+                            <div class="status-pill danger">
+                                <p>{{ report.status.description }}</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                <p class="card-text">Reported By {{ report.reported_by.name}} on {{ report.report_date}}</p>
+                <p class="card-text">
+                    {{ report.problem_summary }}
+                </p>
+                <a href="/reports/{{ report.id }}" class="btn btn-primary">View Details</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script>
+        $("#id_bug_program").on("change", function() {
+            var url = $("#reportForm").attr("data-area-url"); // get the url of the 'load_area' view
+            console.log(url);
+            var programId = $(this).val();
+
+            $.ajax({                                       // create an AJAX call...
+                url: url,                                  // the file to call
+                type: "GET",                               // GET or POST
+                data: {
+                    "program_id": programId                 // pass the id of the area to the view
+                },
+                success: function(data) {                   // on success, we display the returned data in the area
+                    $("#id_bug_area").html(data);                 // the data is the html of the area
+                }
+            });
+        });
+    </script>
+    {# Read the documentation for more information #}
+    {# https://getbootstrap.com/docs/5.0/components/forms/ #}
+{% endblock %}
