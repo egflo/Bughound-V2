@@ -37,7 +37,8 @@ class EmployeeTable(tables.Table):
     username = tables.Column(verbose_name='Username')
     userlevel = tables.Column(verbose_name='User Level')
     details = tables.TemplateColumn(
-        '<a href="/maintenance/employee/{{record.id}}" class="btn btn-primary">Details</a>',
+        '<div class="table-column-button"> <a href="/maintenance/employee/{{record.user_id}}" class="btn '
+        'btn-primary">Details</a> </div>',
         verbose_name='',
         orderable=False,
      )
@@ -54,10 +55,12 @@ class ProgramTable(tables.Table):
     release_build = tables.Column(verbose_name='Release Build')
     version = tables.Column(verbose_name='Version')
     details = tables.TemplateColumn(
-        '<a href="/maintenance/program/{{record.program_id}}" class="btn btn-primary">Details</a>',
+        '<div class="table-column-button"> <a href="/maintenance/program/{{record.program_id}}" class="btn '
+        'btn-primary">Details</a> </div>',
         verbose_name='',
         orderable=False,
      )
+
 
     class Meta:
         model = Programs
@@ -69,7 +72,8 @@ class StatusTable(tables.Table):
     id = tables.Column(verbose_name='ID')
     description = tables.Column(verbose_name='Description')
     details = tables.TemplateColumn(
-        '<a href="/maintenance/status/{{record.id}}" class="btn btn-primary">Details</a>',
+        '<div class="table-column-button"> <a href="/maintenance/status/{{record.id}}" class="btn '
+        'btn-primary">Details</a> </div>',
         verbose_name='',
         orderable=False,
      )
@@ -84,7 +88,8 @@ class PriorityTable(tables.Table):
     id = tables.Column(verbose_name='ID')
     description = tables.Column(verbose_name='Description')
     details = tables.TemplateColumn(
-        '<a href="/maintenance/priority/{{record.id}}" class="btn btn-primary">Details</a>',
+        '<div class="table-column-button"> <a href="/maintenance/priority/{{record.id}}" class="btn '
+        'btn-primary">Details</a> </div>',
         verbose_name='',
         orderable=False,
      )
@@ -102,7 +107,8 @@ class AreaTable(tables.Table):
     release_build = tables.Column(verbose_name='Release Build', accessor="program_id.release_build", attrs={'td': {'valign': 'middle'}})
     version = tables.Column(verbose_name='Version', accessor="program_id.version", attrs={'td': {'valign': 'middle'}})
     details = tables.TemplateColumn(
-        '<a href="/maintenance/area/{{record.id}}" class="btn btn-primary">Details</a>',
+        '<div class="table-column-button"> <a href="/maintenance/area/{{record.id}}" class="btn '
+        'btn-primary">Details</a> </div>',
         verbose_name='',
         orderable=False,
      )
@@ -117,7 +123,8 @@ class SeverityTable(tables.Table):
     id = tables.Column(verbose_name='ID')
     description = tables.Column(verbose_name='Description')
     details = tables.TemplateColumn(
-        '<a href="/maintenance/severity/{{record.id}}" class="btn btn-primary">Details</a>',
+        '<div class="table-column-button"> <a href="/maintenance/severity/{{record.id}}" class="btn '
+        'btn-primary">Details</a> </div>',
         verbose_name='',
         orderable=False,
      )
@@ -132,7 +139,8 @@ class ResolutionTable(tables.Table):
     id = tables.Column(verbose_name='ID')
     type = tables.Column(verbose_name='Type')
     details = tables.TemplateColumn(
-        '<a href="/maintenance/resolution/{{record.id}}" class="btn btn-primary">Details</a>',
+        '<div class="table-column-button"> <a href="/maintenance/resolution/{{record.id}}" class="btn '
+        'btn-primary">Details</a> </div>',
         verbose_name='',
         orderable=False,
      )
@@ -147,7 +155,8 @@ class ReportTypeTable(tables.Table):
     id = tables.Column(verbose_name='ID')
     type = tables.Column(verbose_name='Type')
     details = tables.TemplateColumn(
-        '<a href="/maintenance/report/{{record.id}}" class="btn btn-primary">Details</a>',
+        '<div class="table-column-button"> <a href="/maintenance/report/{{record.id}}" class="btn '
+        'btn-primary">Details</a> </div>',
         verbose_name='',
         orderable=False,
      )

@@ -34,7 +34,45 @@
     </div>
 
     <div class="management-container" style="margin-top: 10px">
-        {% include "table.html" %}
+        <div class="card">
+            <div class="card-header">
+                <h4>Bughound DB </h4>
+            </div>
+            <div class="card-body">
+                <div class="container-fluid">
+                    <div class="row">
+                        <p> Number of Bug Reports: {{ bugs }}</p>
+                    </div>
+                    <div class="row">
+                        <p> Number of Employees: {{ employees }}</p>
+                    </div>
+                    <div class="row">
+                        <p> Number of Functional Areas: {{ areas }}</p>
+                    </div>
+                    <div class="row">
+                        <p> Number of Priorities: {{ priorities }}</p>
+                    </div>
+                    <div class="row">
+                        <p> Number of Report Types: {{ report_types }}</p>
+                    </div>
+                    <div class="row">
+                        <p> Number of Resolutions: {{ resolutions }}</p>
+                    </div>
+                    <div class="row">
+                        <p> Number of Severities: {{ severities }}</p>
+                    </div>
+                    <div class="row">
+                        <p> Number of Statuses: {{ statuses }}</p>
+                    </div>
+                    <div class="row">
+                        <p> Number of User Levels: {{ userlevel }}</p>
+                    </div>
+                    <div class="row">
+                        <p> Number of Programs: {{ programs }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>

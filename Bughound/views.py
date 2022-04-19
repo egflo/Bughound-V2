@@ -77,15 +77,31 @@ def maintenance(request):
     severities = len(Severity.objects.all())
     report_types = len(Reports.objects.all())
     areas = len(FunctionalArea.objects.all())
+    userlevel = len(Userlevel.objects.all())
 
+    resolved = Status.objects.get(description="Resolved")
+    open = Status.objects.get(description="Open")
+    closed = Status.objects.get(description="Closed")
+    number_of_resolved_bugs = len(Bugs.objects.filter(status=resolved))
+    number_of_open_bugs = len(Bugs.objects.filter(status=open))
+    number_of_closed_bugs = len(Bugs.objects.filter(status=closed))
 
-    number_of_bugs = len(Bugs.objects.all())
-    number_of_resolved_bugs = len(Bugs.objects.filter(status='Resolved'))
-    number_of_open_bugs = len(Bugs.objects.filter(status='Open'))
-    number_of_closed_bugs = len(Bugs.objects.filter(status='Closed'))
+    context = {
+        'bugs': bugs,
+        'employees': employees,
+        'programs': programs,
+        'resolutions': resolutions,
+        'priorities': priorities,
+        'statuses': statuses,
+        'severities': severities,
+        'report_types': report_types,
+        'areas': areas,
+        'userlevel': userlevel,
+        'number_of_resolved_bugs': number_of_resolved_bugs,
+        'number_of_open_bugs': number_of_open_bugs,
+        'number_of_closed_bugs': number_of_closed_bugs,}
 
-
-
+    return render(request, 'maintenance.html', context)
     #return render(request, 'maintenance.html', {'table': table, 'data': data})
 
 
@@ -201,7 +217,7 @@ def maintenance_detail(request, id):
     except EmptyPage:
         data = paginator.page(paginator.num_pages)
 
-    return render(request, 'maintenance.html', {'table': table, 'data': data, 'title': title})
+    return render(request, 'maintenance_detail.html', {'table': table, 'data': data, 'title': title})
 
 
 def load_areas(request):
