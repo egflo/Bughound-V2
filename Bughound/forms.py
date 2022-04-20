@@ -75,6 +75,19 @@ class ReportTypeForm(forms.ModelForm):
         model = Reports
         fields = '__all__'
 
+
+class SettingsForm(forms.Form):
+
+    def __init__(self, *args, **kwargs):
+        super(SettingsForm, self).__init__(*args, **kwargs)
+
+    username = forms.CharField(label='Username', max_length=100)
+    name = forms.CharField(label='Name', max_length=100)
+    email = forms.EmailField(label='Email', max_length=100)
+    password = forms.CharField(label='Password', widget=forms.PasswordInput(), disabled=True)
+
+
+
 class ReportForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super(ReportForm, self).__init__(*args, **kwargs)

@@ -6,7 +6,7 @@
 {% load static %}
 {% block content %}
 <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
-<div class="container">
+<div class="container-fluid">
     <div class="row">
         <div class="col-md-12">
             <h1>Reports</h1>
@@ -17,40 +17,40 @@
         <div class="card">
             <div class="card-body">
                 <div class="row">
-                    <div class="col-md-8">
+                    <div class="col">
                         <h5 class="card-title">
                             {{ report.program.program_name }} ({{report.program.release_build }}, {{ report.program.version }})
                         </h5>
                     </div>
                     <div class="col-auto">
-                        {% if report.severity.id == 1 %}
-                            <div class="status-pill success">
-                                <p>{{ report.severity.description }}</p>
-                            </div>
-                        {% elif report.severity.id == 2 %}
-                            <div class="status-pill warning">
-                                <p>{{ report.severity.description }}</p>
-                            </div>
-                        {% else %}
-                            <div class="status-pill danger">
-                                <p>{{ report.severity.description }}</p>
-                            </div>
-                        {% endif %}
-                    </div>
-                    <div class="col-auto">
-                        {% if report.status.id == 1 %}
-                            <div class="status-pill success">
-                                <p>{{ report.status.description }}</p>
-                            </div>
-                        {% elif report.status.id == 2 %}
-                            <div class="status-pill warning">
-                                <p>{{ report.status.description }}</p>
-                            </div>
-                        {% else %}
-                            <div class="status-pill danger">
-                                <p>{{ report.status.description }}</p>
-                            </div>
-                        {% endif %}
+                        <div class="content" style="display: flex; gap: 10px">
+                            {% if report.severity.id == 1 %}
+                                <div class="status-pill success">
+                                    <p>{{ report.severity.description }}</p>
+                                </div>
+                            {% elif report.severity.id == 2 %}
+                                <div class="status-pill warning">
+                                    <p>{{ report.severity.description }}</p>
+                                </div>
+                            {% else %}
+                                <div class="status-pill danger">
+                                    <p>{{ report.severity.description }}</p>
+                                </div>
+                            {% endif %}
+                            {% if report.status.id == 1 %}
+                                <div class="status-pill success">
+                                    <p>{{ report.status.description }}</p>
+                                </div>
+                            {% elif report.status.id == 2 %}
+                                <div class="status-pill warning">
+                                    <p>{{ report.status.description }}</p>
+                                </div>
+                            {% else %}
+                                <div class="status-pill danger">
+                                    <p>{{ report.status.description }}</p>
+                                </div>
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
                 <p class="card-text">Reported By {{ report.reported_by.name}} on {{ report.report_date}}</p>

@@ -1,4 +1,7 @@
 
+
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -29,8 +32,6 @@
       }
     </style>
 
-    <!-- Custom styles for this template -->
-    <link href="sidebars.css" rel="stylesheet">
   </head>
     <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
       <symbol id="bootstrap" viewBox="0 0 118 94">
@@ -103,39 +104,33 @@
 
     <div class="body-container" style="display:grid;grid-template-columns: 280px auto;min-height: 100vh">
 
-          <div class="d-flex flex-column flex-shrink-0 p-3 text-white bg-dark" style="width: 100%;">
+          <div id="nav" class="d-flex flex-column flex-shrink-0 p-3 text-white bg-dark" style="width: 100%;">
             <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
               <svg class="bi me-2" width="40" height="32"><use xlink:href="#bootstrap"/></svg>
               <span class="fs-4">Bughound</span>
             </a>
             <hr>
-            <ul class="nav nav-pills flex-column mb-auto">
-              <li class="nav-item">
-                <a href="#" class="nav-link active" aria-current="page">
-                  <svg class="bi me-2" width="16" height="16"><use xlink:href="#home"/></svg>
-                  Home
-                </a>
-              </li>
+            <ul id="selectors" class="nav nav-pills flex-column mb-auto">
               <li>
-                <a href="#" class="nav-link text-white">
+                <a href="/dashboard" id="dashboard" class="nav-link {% if "/dashboard/" in request.path %}active{% endif %} text-white">
                   <svg class="bi me-2" width="16" height="16"><use xlink:href="#speedometer2"/></svg>
                   Dashboard
                 </a>
               </li>
               <li>
-                <a href="/reports" class="nav-link text-white">
+                <a href="/reports" id="reports" class="nav-link {% if "/reports/" in request.path %}active{% endif %} text-white">
                   <svg class="bi me-2" width="16" height="16"><use xlink:href="#table"/></svg>
                   Reports
                 </a>
               </li>
               <li>
-                <a href="/report" class="nav-link text-white">
+                <a href="/report" id="submit" class="nav-link {% if "/report/" in request.path %}active{% endif %} text-white">
                   <svg class="bi me-2" width="16" height="16"><use xlink:href="#grid"/></svg>
                   Submit a Report
                 </a>
               </li>
               <li>
-                <a href="/maintenance" class="nav-link text-white">
+                <a href="/maintenance" id="maintenance" class="nav-link {% if "/maintenance/" in request.path %}active{% endif %} text-white">
                   <svg class="bi me-2" width="16" height="16"><use xlink:href="#people-circle"/></svg>
                   Maintenance
                 </a>
@@ -144,14 +139,13 @@
             <hr>
             <div class="dropdown">
               <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
-                <strong>mdo</strong>
+                <strong>{{ request.user.username }}</strong>
               </a>
               <ul class="dropdown-menu dropdown-menu-dark text-small shadow" aria-labelledby="dropdownUser1">
-                <li><a class="dropdown-item" href="#">New Report...</a></li>
-                <li><a class="dropdown-item" href="#">Settings</a></li>
-                <li><a class="dropdown-item" href="#">Profile</a></li>
+                <li><a class="dropdown-item" href="/report">New Report...</a></li>
+                <li><a class="dropdown-item" href="/settings">Settings</a></li>
                 <li><hr class="dropdown-divider"></li>
-                <li><a class="dropdown-item" href="#">Sign out</a></li>
+                <li><a class="dropdown-item" href="/logout">Sign out</a></li>
               </ul>
             </div>
         </div>
@@ -163,6 +157,15 @@
 
     </div>
 
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script>
+      $(document).ready(function(){
+        $("#selectors a").click(function(){
+          $(this).addClass("active");
+        });
+      });
 
+
+    </script>
 </body>
 </html>

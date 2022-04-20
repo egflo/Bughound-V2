@@ -85,6 +85,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'Bughound.wsgi.application'
 
+LOGOUT_REDIRECT_URL = 'login'
 
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases

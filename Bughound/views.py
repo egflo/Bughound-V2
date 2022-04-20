@@ -8,9 +8,11 @@ from django.shortcuts import render
 from django_tables2 import SingleTableView
 from django.contrib.auth import authenticate
 from django.contrib.auth import login as auth_login
+from django.contrib.auth.views import LogoutView
+
 
 from .forms import ReportForm, EmployeeForm, ResolutionForm, ProgramForm, AreaForm, PriorityForm, StatusForm, \
-    SeverityForm, ReportTypeForm, LoginForm
+    SeverityForm, ReportTypeForm, LoginForm, SettingsForm
 from .models import *
 from .tables import *
 from operator import itemgetter
@@ -53,11 +55,19 @@ def dashboard(request):
     assigned_reports = Bugs.objects.filter(assigned_to=request.user.employee)
     #Get user's reported reports
     reported_reports = Bugs.objects.filter(reported_by=request.user.employee)
+
+    recent_reports = Bugs.objects.all().order_by('-report_date')[:5]
+
+    open_reports = len(Bugs.objects.filter(status__description='Open'))
+
     print("assigned_reports: ", assigned_reports)
     print("reported_reports: ", reported_reports)
+    print("user: ", request.user.employee.name)
 
-
-    return render(request, 'dashboard.html', {'assigned_reports': assigned_reports})
+    return render(request, 'dashboard.html', {'tasks': reported_reports,
+                                              'assigned': assigned_reports,
+                                              'recent': recent_reports,
+                                              'open': open_reports})
 
 
 @login_required(login_url='/login/')
@@ -309,7 +319,7 @@ def reportUpdate(request, id):
     form.fields['bug_summary'].initial = report.problem_summary
     form.fields['bug_description'].initial = report.problem
     form.fields['bug_suggested_fix'].initial = report.suggested_fix
-    form.fields['bug_reported_by'].initial = report.reported_by.id
+    form.fields['bug_reported_by'].initial = report.reported_by.user_id
     form.fields['bug_reported_date'].initial = report.report_date
     form.fields['bug_comments'].initial = report.comments
 
@@ -317,14 +327,14 @@ def reportUpdate(request, id):
     form.fields['bug_area'].widget.choices = [(a.id, a.name) for a in
                                               FunctionalArea.objects.filter(program_id=report.program.program_id)]
 
-    form.fields['bug_assigned_to'].initial = report.assigned_to.id if report.assigned_to is not None else ''
+    form.fields['bug_assigned_to'].initial = report.assigned_to.user_id if report.assigned_to is not None else ''
     form.fields['bug_status'].initial = report.status.id
     form.fields['bug_priority'].initial = report.priority.id
     form.fields['bug_resolution'].initial = report.resolution.id if report.resolution is not None else ''
     form.fields['bug_resolution_version'].initial = report.resolution_version
-    form.fields['bug_resolved_by'].initial = report.resolved_by.id if report.resolved_by is not None else ''
+    form.fields['bug_resolved_by'].initial = report.resolved_by.user_id if report.resolved_by is not None else ''
     form.fields['bug_resolved_date'].initial = report.resolved_date
-    form.fields['bug_tested_by'].initial = report.tested_by.id if report.tested_by is not None else ''
+    form.fields['bug_tested_by'].initial = report.tested_by.user_id if report.tested_by is not None else ''
     form.fields['bug_tested_date'].initial = report.tested_date
 
     if request.method == 'POST':
@@ -430,6 +440,32 @@ def edit(request, name, object_id):
 
     return render(request, 'edit.html', context)
 
+
+@login_required
+def settings(request):
+    form = SettingsForm()
+    if request.method == 'POST':
+        form = SettingsForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect('/dashboard/')
+
+
+
+    user_id = request.user.id
+    user = User.objects.get(id=user_id)
+
+    form.fields['username'].initial = user.username
+    form.fields['name'].initial = user.employee.name
+    form.fields['email'].initial = user.email
+
+
+    context = {
+        'title': 'Settings',
+        'form': form,
+    }
+
+    return render(request, 'settings.html', context)
 
 class ReportListView(SingleTableView):
     model = AttachmentType
