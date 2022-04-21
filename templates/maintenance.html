@@ -34,6 +34,16 @@
     </div>
 
     <div class="management-container" style="margin-top: 10px">
+        {% if userlevel != 3 %}
+            <div class="card">
+                <div class="card-header">
+                    <h3>Attention: Insufficient User Level</h3>
+                </div>
+                <div class="card-body">
+                    <p>You can access this page but cannot view/add/edit database values.</p>
+                </div>
+            </div>
+        {% endif %}
         <div class="card">
             <div class="card-header">
                 <h4>Bughound DB </h4>

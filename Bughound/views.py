@@ -117,6 +117,12 @@ def maintenance(request):
 
 @login_required(login_url='/login/')
 def maintenance_detail(request, id):
+    user = request.user
+    employee = Employee.objects.get(user=user)
+
+    if(employee.userlevel != 3):
+        return HttpResponseRedirect('/maintenance/')
+
     query = request.GET.get('query')
 
     title = ""
@@ -227,7 +233,7 @@ def maintenance_detail(request, id):
     except EmptyPage:
         data = paginator.page(paginator.num_pages)
 
-    return render(request, 'maintenance_detail.html', {'table': table, 'data': data, 'title': title})
+    return render(request, 'maintenance_detail.html', {'table': table, 'data': data, 'title': title, 'level': employee.userlevel})
 
 
 def load_areas(request):
@@ -435,6 +441,12 @@ def reportUpdate(request, id):
 
 @login_required
 def add(request, name):
+    user = request.user
+    employee = Employee.objects.get(user=user)
+
+    if(employee.userlevel != 3):
+        return HttpResponseRedirect('/maintenance/')
+
     if name == 'program':
         name = 'Program'
         form = ProgramForm()
@@ -519,6 +531,14 @@ def add(request, name):
 
 @login_required(login_url='/login/')
 def edit(request, name, object_id):
+
+    user = request.user
+    employee = Employee.objects.get(user=user)
+
+    if(employee.userlevel != 3):
+        return HttpResponseRedirect('/maintenance/')
+
+
     if name == 'program':
         name = 'Program'
         program = Programs.objects.get(program_id=object_id)
