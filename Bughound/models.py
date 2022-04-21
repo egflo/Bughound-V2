@@ -11,27 +11,6 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 
-class AttachmentType(models.Model):
-    id = models.AutoField(primary_key=True)
-    type = models.CharField(max_length=100)
-
-    class Meta:
-        managed = True
-        db_table = 'attachment_type'
-
-
-class Attachments(models.Model):
-    id = models.AutoField(primary_key=True)
-    type = models.CharField(max_length=32)
-    location = models.CharField(max_length=100)
-    problem_report_id = models.IntegerField()
-    attachment_report_id = models.IntegerField()
-
-    class Meta:
-        managed = True
-        db_table = 'attachments'
-
-
 class Bugs(models.Model):
     id = models.AutoField(primary_key=True)
     program = models.ForeignKey('Programs', models.DO_NOTHING, db_column='program')
@@ -60,6 +39,26 @@ class Bugs(models.Model):
         managed = True
         db_table = 'bugs'
 
+
+class AttachmentType(models.Model):
+    id = models.AutoField(primary_key=True)
+    type = models.CharField(max_length=100)
+
+    class Meta:
+        managed = True
+        db_table = 'attachment_type'
+
+
+class Attachments(models.Model):
+    id = models.AutoField(primary_key=True)
+    type = models.CharField(max_length=32)
+    location = models.CharField(max_length=100)
+    problem_report_id = models.ForeignKey(Bugs, models.DO_NOTHING, db_column='problem_report_id')
+    attachment_report_id = models.ForeignKey(AttachmentType, models.DO_NOTHING, db_column='attachment_report_id')
+
+    class Meta:
+        managed = True
+        db_table = 'attachments'
 
 
 class Employee(models.Model):

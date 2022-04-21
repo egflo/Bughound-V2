@@ -237,13 +237,64 @@ def load_areas(request):
     return render(request, 'area_dropdown_list_options.html', {'areas': areas})
 
 
+
+def processform(form, report = None):
+
+    program = form.cleaned_data['bug_program']
+    bug_reproduceable = form.cleaned_data['bug_reproducible']
+    bug_report_type = form.cleaned_data['bug_report_type']
+    bug_severity = form.cleaned_data['bug_severity']
+    bug_summary = form.cleaned_data['bug_summary']
+    bug_description = form.cleaned_data['bug_description']
+    bug_suggested_fix = form.cleaned_data['bug_suggested_fix']
+    bug_reported_by = form.cleaned_data['bug_reported_by']
+    bug_reported_date = form.cleaned_data['bug_reported_date']
+    bug_comments = form.cleaned_data['bug_comments']
+    bug_area = form.cleaned_data['bug_area']
+    bug_assigned_to = form.cleaned_data['bug_assigned_to']
+    bug_status = form.cleaned_data['bug_status']
+    bug_priority = form.cleaned_data['bug_priority']
+    bug_resolution = form.cleaned_data['bug_resolution']
+    bug_resolution_version = form.cleaned_data['bug_resolution_version']
+    bug_resolved_by = form.cleaned_data['bug_resolved_by']
+    bug_resolved_date = form.cleaned_data['bug_resolved_date']
+    bug_tested_by = form.cleaned_data['bug_tested_by']
+    bug_tested_date = form.cleaned_data['bug_tested_date']
+    bug_deferred = form.cleaned_data['bug_deferred']
+    #bug_attachment = form.FILES.get('bug_attachment')
+
+    bug = Bugs(
+        program=Programs.objects.get(program_id=program),
+        report_type=Reports.objects.get(id=bug_report_type),
+        severity=Severity.objects.get(id=bug_severity),
+        problem_summary=bug_summary,
+        reproduceable=bug_reproduceable,
+        problem=bug_description,
+        suggested_fix=bug_suggested_fix,  # Optional
+        reported_by=Employee.objects.get(user_id=bug_reported_by),
+        report_date=bug_reported_date,
+        area=FunctionalArea.objects.get(id=bug_area),
+        assigned_to=Employee.objects.get(user_id=bug_assigned_to) if bug_assigned_to != '' else None,  # Optional
+        comments=bug_comments,
+        status=Status.objects.get(id=bug_status),
+        priority=Priority.objects.get(id=bug_priority),
+        resolution=Resolution.objects.get(id=bug_resolution) if bug_resolution != '' else None,  # Optional
+        resolution_version=bug_resolution_version,
+        resolved_by=Employee.objects.get(user_id=bug_resolved_by) if bug_resolved_by != '' else None,  # Optional
+        resolved_date=bug_resolved_date,  # Optional
+        tested_by=Employee.objects.get(user_id=bug_tested_by) if bug_tested_by != '' else None,  # Optional
+        tested_date=bug_tested_date,  # Optional
+        deferred=bug_deferred  # Optional
+    )
+
+    return bug
+
+
 @login_required(login_url='/login/')
 def report(request):
     if request.method == 'POST':
         form = ReportForm(request.POST)
-
         if form.is_valid():
-            print("form is valid")
             program = form.cleaned_data['bug_program']
             bug_reproduceable = form.cleaned_data['bug_reproducible']
             bug_report_type = form.cleaned_data['bug_report_type']
@@ -265,6 +316,7 @@ def report(request):
             bug_tested_by = form.cleaned_data['bug_tested_by']
             bug_tested_date = form.cleaned_data['bug_tested_date']
             bug_deferred = form.cleaned_data['bug_deferred']
+            # bug_attachment = form.FILES.get('bug_attachment')
 
             bug = Bugs(
                 program=Programs.objects.get(program_id=program),
@@ -274,23 +326,25 @@ def report(request):
                 reproduceable=bug_reproduceable,
                 problem=bug_description,
                 suggested_fix=bug_suggested_fix,  # Optional
-                reported_by=Employee.objects.get(id=bug_reported_by),
+                reported_by=Employee.objects.get(user_id=bug_reported_by),
                 report_date=bug_reported_date,
                 area=FunctionalArea.objects.get(id=bug_area),
-                assigned_to=Employee.objects.get(id=bug_assigned_to) if bug_assigned_to != '' else None,  # Optional
+                assigned_to=Employee.objects.get(user_id=bug_assigned_to) if bug_assigned_to != '' else None,
+                # Optional
                 comments=bug_comments,
                 status=Status.objects.get(id=bug_status),
                 priority=Priority.objects.get(id=bug_priority),
                 resolution=Resolution.objects.get(id=bug_resolution) if bug_resolution != '' else None,  # Optional
                 resolution_version=bug_resolution_version,
-                resolved_by=Employee.objects.get(id=bug_resolved_by) if bug_resolved_by != '' else None,  # Optional
+                resolved_by=Employee.objects.get(user_id=bug_resolved_by) if bug_resolved_by != '' else None,
+                # Optional
                 resolved_date=bug_resolved_date,  # Optional
-                tested_by=Employee.objects.get(id=bug_tested_by) if bug_tested_by != '' else None,  # Optional
+                tested_by=Employee.objects.get(user_id=bug_tested_by) if bug_tested_by != '' else None,  # Optional
                 tested_date=bug_tested_date,  # Optional
                 deferred=bug_deferred  # Optional
             )
-            bug.save()
 
+            bug.save()
             return HttpResponseRedirect('/dashboard/')
 
     else:
@@ -299,6 +353,7 @@ def report(request):
     context = {
         'title': 'Report',
         'form': form,
+        'url': '/report/',
     }
 
     return render(request, 'report.html', context)
@@ -306,49 +361,160 @@ def report(request):
 
 @login_required(login_url='/login/')
 def reportUpdate(request, id):
-    report = Bugs.objects.get(id=id)
-    form = ReportForm()
 
+    report_update = Bugs.objects.get(id=id)
+    form = ReportForm()
     # list(FunctionalArea.objects.filter(program_id=progam_id).values_list('id', 'name'))))
-    form.fields['bug_program'].initial = report.program.program_id
+    form.fields['bug_program'].initial = report_update.program.program_id
     form.fields['bug_program'].widget.attrs['disabled'] = True
 
-    form.fields['bug_reproducible'].initial = report.reproduceable
-    form.fields['bug_report_type'].initial = report.report_type.id
-    form.fields['bug_severity'].initial = report.severity.id
-    form.fields['bug_summary'].initial = report.problem_summary
-    form.fields['bug_description'].initial = report.problem
-    form.fields['bug_suggested_fix'].initial = report.suggested_fix
-    form.fields['bug_reported_by'].initial = report.reported_by.user_id
-    form.fields['bug_reported_date'].initial = report.report_date
-    form.fields['bug_comments'].initial = report.comments
+    form.fields['bug_reproducible'].initial = report_update.reproduceable
+    form.fields['bug_report_type'].initial = report_update.report_type.id
+    form.fields['bug_severity'].initial = report_update.severity.id
+    form.fields['bug_summary'].initial = report_update.problem_summary
+    form.fields['bug_description'].initial = report_update.problem
+    form.fields['bug_suggested_fix'].initial = report_update.suggested_fix
+    form.fields['bug_reported_by'].initial = report_update.reported_by.user_id
+    form.fields['bug_reported_date'].initial = report_update.report_date
+    form.fields['bug_comments'].initial = report_update.comments
 
-    form.fields['bug_area'].initial = report.area.id
+    form.fields['bug_area'].initial = report_update.area.id
     form.fields['bug_area'].widget.choices = [(a.id, a.name) for a in
-                                              FunctionalArea.objects.filter(program_id=report.program.program_id)]
+                                              FunctionalArea.objects.filter(program_id=report_update.program.program_id)]
 
-    form.fields['bug_assigned_to'].initial = report.assigned_to.user_id if report.assigned_to is not None else ''
-    form.fields['bug_status'].initial = report.status.id
-    form.fields['bug_priority'].initial = report.priority.id
-    form.fields['bug_resolution'].initial = report.resolution.id if report.resolution is not None else ''
-    form.fields['bug_resolution_version'].initial = report.resolution_version
-    form.fields['bug_resolved_by'].initial = report.resolved_by.user_id if report.resolved_by is not None else ''
-    form.fields['bug_resolved_date'].initial = report.resolved_date
-    form.fields['bug_tested_by'].initial = report.tested_by.user_id if report.tested_by is not None else ''
-    form.fields['bug_tested_date'].initial = report.tested_date
+    form.fields['bug_assigned_to'].initial = report_update.assigned_to.user_id if report_update.assigned_to is not None else ''
+    form.fields['bug_status'].initial = report_update.status.id
+    form.fields['bug_priority'].initial = report_update.priority.id
+    form.fields['bug_resolution'].initial = report_update.resolution.id if report_update.resolution is not None else ''
+    form.fields['bug_resolution_version'].initial = report_update.resolution_version
+    form.fields['bug_resolved_by'].initial = report_update.resolved_by.user_id if report_update.resolved_by is not None else ''
+    form.fields['bug_resolved_date'].initial = report_update.resolved_date
+    form.fields['bug_tested_by'].initial = report_update.tested_by.user_id if report_update.tested_by is not None else ''
+    form.fields['bug_tested_date'].initial = report_update.tested_date
 
     if request.method == 'POST':
-        form = ReportForm(request.POST, instance=report)
+        print("POST")
+        form = ReportForm(request.POST)
         if form.is_valid():
-            form.save()
+            print("VALID")
+            report_update.program = form.cleaned_data['bug_program']
+            report_update.reproduceable = form.cleaned_data['bug_reproducible']
+            report_update.report_type = form.cleaned_data['bug_report_type']
+            report_update.severity = form.cleaned_data['bug_severity']
+            report_update.problem = form.cleaned_data['bug_summary']
+            report_update.problem_summary = form.cleaned_data['bug_description']
+            report_update.suggested_fix = form.cleaned_data['bug_suggested_fix']
+            report_update.reported_by = form.cleaned_data['bug_reported_by']
+            report_update.report_date= form.cleaned_data['bug_reported_date']
+            report_update.comments = form.cleaned_data['bug_comments']
+            report_update.area = form.cleaned_data['bug_area']
+            report_update.assigned_to = form.cleaned_data['bug_assigned_to']
+            report_update.status = form.cleaned_data['bug_status']
+            report_update.priority = form.cleaned_data['bug_priority']
+            report_update.resolution = form.cleaned_data['bug_resolution']
+            report_update.resolution_version = form.cleaned_data['bug_resolution_version']
+            report_update.resolved_by = form.cleaned_data['bug_resolved_by']
+            report_update.report_date = form.cleaned_data['bug_resolved_date']
+            report_update.tested_by = form.cleaned_data['bug_tested_by']
+            report_update.tested_date = form.cleaned_data['bug_tested_date']
+            report_update.deferred = form.cleaned_data['bug_deferred']
+            # bug_attachment = form.FILES.get('bug_attachment')
+            report_update.save()
+
             return HttpResponseRedirect('/dashboard/')
 
     context = {
         'title': 'Update Report',
         'form': form,
+        'url': '/reports/' + str(report_update.id) + '/'
     }
 
-    return render(request, 'report.html', context)
+    return render(request, 'report.html' , context)
+
+
+
+@login_required
+def add(request, name):
+    if name == 'program':
+        name = 'Program'
+        form = ProgramForm()
+        if request.method == 'POST':
+            form = ProgramForm(request.POST)
+            if form.is_valid():
+                form.save()
+                return HttpResponseRedirect('/maintenance/program')
+
+    elif name == 'area':
+        name = 'Area'
+        form = AreaForm()
+        if request.method == 'POST':
+            form = AreaForm(request.POST)
+            if form.is_valid():
+                form.save()
+                return HttpResponseRedirect('/maintenance/area')
+
+    elif name == 'status':
+        name = 'Status'
+        form = StatusForm()
+        if request.method == 'POST':
+            form = StatusForm(request.POST)
+            if form.is_valid():
+                form.save()
+                return HttpResponseRedirect('/maintenance/status')
+
+    elif name == 'priority':
+        name = 'Priority'
+        form = PriorityForm()
+        if request.method == 'POST':
+            form = PriorityForm(request.POST)
+            if form.is_valid():
+                form.save()
+                return HttpResponseRedirect('/maintenance/priority')
+
+    elif name == 'resolution':
+        name = 'Resolution'
+        form = ResolutionForm()
+        if request.method == 'POST':
+            form = ResolutionForm(request.POST)
+            if form.is_valid():
+                form.save()
+                return HttpResponseRedirect('/maintenance/resolution')
+
+    elif name == 'employee':
+        name = 'Employee'
+        form = EmployeeForm()
+        if request.method == 'POST':
+            form = EmployeeForm(request.POST)
+            if form.is_valid():
+                form.save()
+                return HttpResponseRedirect('/maintenance/employee')
+
+    elif name == 'severity':
+        name = 'Severity'
+        form = SeverityForm()
+        if request.method == 'POST':
+            form = SeverityForm(request.POST)
+            if form.is_valid():
+                form.save()
+                return HttpResponseRedirect('/maintenance/severity')
+
+    elif name == 'report':
+        name = 'Report Type'
+        form = ReportTypeForm()
+        if request.method == 'POST':
+            form = ReportForm(request.POST)
+            if form.is_valid():
+                form.save()
+                return HttpResponseRedirect('/maintenance/report')
+
+    context = {
+        'title': 'Add ' + name,
+        'form': form,
+    }
+
+    return render(request, 'edit.html', context)
+
+
 
 
 @login_required(login_url='/login/')
@@ -361,7 +527,7 @@ def edit(request, name, object_id):
             form = ProgramForm(request.POST, instance=program)
             if form.is_valid():
                 form.save()
-                return HttpResponseRedirect('/dashboard/')
+                return HttpResponseRedirect('/maintenance/program')
 
     elif name == 'area':
         name = 'Area'
@@ -371,7 +537,7 @@ def edit(request, name, object_id):
             form = AreaForm(request.POST, instance=area)
             if form.is_valid():
                 form.save()
-                return HttpResponseRedirect('/dashboard/')
+                return HttpResponseRedirect('/maintenance/area')
 
     elif name == 'status':
         name = 'Status'
@@ -381,7 +547,7 @@ def edit(request, name, object_id):
             form = StatusForm(request.POST, instance=status)
             if form.is_valid():
                 form.save()
-                return HttpResponseRedirect('/dashboard/')
+                return HttpResponseRedirect('/maintenance/status')
 
     elif name == 'priority':
         name = 'Priority'
@@ -391,7 +557,7 @@ def edit(request, name, object_id):
             form = PriorityForm(request.POST, instance=priority)
             if form.is_valid():
                 form.save()
-                return HttpResponseRedirect('/dashboard/')
+                return HttpResponseRedirect('/maintenance/priority')
 
     elif name == 'resolution':
         name = 'Resolution'
@@ -401,7 +567,7 @@ def edit(request, name, object_id):
             form = ResolutionForm(request.POST, instance=resolution)
             if form.is_valid():
                 form.save()
-                return HttpResponseRedirect('/dashboard/')
+                return HttpResponseRedirect('/maintenance/resolution')
 
     elif name == 'employee':
         name = 'Employee'
@@ -411,7 +577,7 @@ def edit(request, name, object_id):
             form = EmployeeForm(request.POST, instance=employee)
             if form.is_valid():
                 form.save()
-                return HttpResponseRedirect('/dashboard/')
+                return HttpResponseRedirect('/maintenance/employee')
 
     elif name == 'severity':
         name = 'Severity'
@@ -421,8 +587,7 @@ def edit(request, name, object_id):
             form = SeverityForm(request.POST, instance=severity)
             if form.is_valid():
                 form.save()
-                return HttpResponseRedirect('/dashboard/')
-
+                return HttpResponseRedirect('/maintenance/severity')
     elif name == 'report':
         name = 'Report Type'
         report = Reports.objects.get(id=object_id)
@@ -431,7 +596,7 @@ def edit(request, name, object_id):
             form = ReportForm(request.POST, instance=report)
             if form.is_valid():
                 form.save()
-                return HttpResponseRedirect('/dashboard/')
+                return HttpResponseRedirect('/maintenance/report')
 
     context = {
         'title': 'Update ' + name,

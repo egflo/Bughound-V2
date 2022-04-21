@@ -15,7 +15,7 @@
         <hr>
         <div class="row">
             <div class="col-md-12">
-                <form action="/report/" method="post" class="form" id="reportForm" data-area-url="{% url 'ajax_load_areas' %}">
+                <form action={{ url }} method="post" class="form" id="reportForm" data-area-url="{% url 'ajax_load_areas' %}">
                   {% csrf_token %}
                     {% bootstrap_form form %}
 

@@ -40,6 +40,7 @@ urlpatterns = [
     path('maintenance/', views.maintenance, name='maintenance'),
     path('maintenance/<str:id>/', views.maintenance_detail, name='maintenance_detail'),
     path('maintenance/<str:name>/<int:object_id>/', views.edit, name='maintenance_edit'),
+    path('maintenance/<str:name>/add/', views.add, name='maintenance_add'),
     path('logout/', LogoutView.as_view(), name='logout'),
     path('settings/', views.settings, name='settings'),
 ]
