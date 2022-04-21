@@ -1,5 +1,5 @@
 # Bughound-V2
-Bughound app completely rewritten in Python. Using the Django Framework.
+Bughound app completely rewritten in Python. Using the Django Framework. Missing Functionality: Export and File Uploading.
 
 Completely rewritten using Django Framework.
 
